@@ -20,6 +20,10 @@ public class ChamadoService {
         return chamadoRepository.findAll();
     }
 
+    public Chamado buscarPorId(Long id) {
+        return chamadoRepository.findById(id).orElse(null);
+    }
+
     public Chamado salvar(Chamado chamado) {
         return chamadoRepository.save(chamado);
     }
