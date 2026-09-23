@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.helpdesk.helpdesk_ti.model.Chamado;
 import br.com.helpdesk.helpdesk_ti.service.ChamadoService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/chamados")
@@ -30,7 +31,7 @@ public class ChamadoController {
     }
 
     @PostMapping
-    public Chamado criar(@RequestBody Chamado chamado) {
+    public Chamado criar(@Valid @RequestBody Chamado chamado) {
         return chamadoService.salvar(chamado);
     }
 
@@ -40,7 +41,10 @@ public class ChamadoController {
     }
 
     @PutMapping("/{id}")
-    public Chamado atualizar(@PathVariable Long id, @RequestBody Chamado chamado) {
+    public Chamado atualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody Chamado chamado) {
+
         chamado.setId(id);
         return chamadoService.salvar(chamado);
     }
