@@ -43,4 +43,8 @@ public class ChamadoService {
     public List<Chamado> buscarPorSetor(String setor) {
         return chamadoRepository.findBySetorIgnoreCase(setor);
     }
+
+    public List<Chamado> buscarPorSolicitante(String solicitante) {
+        return chamadoRepository.findBySolicitanteIgnoreCase(solicitante);
+    }
 }

@@ -50,6 +50,11 @@ public class ChamadoController {
         return chamadoService.buscarPorSetor(setor);
     }
 
+    @GetMapping("/solicitante/{solicitante}")
+    public List<Chamado> buscarPorSolicitante(@PathVariable String solicitante) {
+        return chamadoService.buscarPorSolicitante(solicitante);
+    }
+
     @PostMapping
     public Chamado criar(@Valid @RequestBody Chamado chamado) {
         return chamadoService.salvar(chamado);

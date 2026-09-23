@@ -14,4 +14,6 @@ public interface ChamadoRepository extends JpaRepository<Chamado, Long> {
 
     List<Chamado> findByPrioridadeIgnoreCase(String prioridade);
 
+    List<Chamado> findBySolicitanteIgnoreCase(String solicitante);
+
 }
