@@ -35,4 +35,8 @@ public class ChamadoService {
     public List<Chamado> buscarPorStatus(String status) {
         return chamadoRepository.findByStatusIgnoreCase(status);
     }
+
+    public List<Chamado> buscarPorPrioridade(String prioridade) {
+        return chamadoRepository.findByPrioridadeIgnoreCase(prioridade);
+    }
 }

@@ -40,6 +40,11 @@ public class ChamadoController {
         return chamadoService.buscarPorStatus(status);
     }
 
+    @GetMapping("/prioridade/{prioridade}")
+    public List<Chamado> buscarPorPrioridade(@PathVariable String prioridade) {
+        return chamadoService.buscarPorPrioridade(prioridade);
+    }
+
     @PostMapping
     public Chamado criar(@Valid @RequestBody Chamado chamado) {
         return chamadoService.salvar(chamado);
