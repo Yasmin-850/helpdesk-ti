@@ -30,6 +30,11 @@ public class ChamadoController {
         return chamadoService.listarTodos();
     }
 
+    @GetMapping("/status/{status}")
+    public List<Chamado> buscarPorStatus(@PathVariable String status) {
+        return chamadoService.buscarPorStatus(status);
+    }
+
     @PostMapping
     public Chamado criar(@Valid @RequestBody Chamado chamado) {
         return chamadoService.salvar(chamado);
