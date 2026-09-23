@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.helpdesk.helpdesk_ti.model.Chamado;
@@ -72,5 +73,13 @@ public class ChamadoController {
 
         chamado.setId(id);
         return chamadoService.salvar(chamado);
+    }
+
+    @PutMapping("/{id}/status")
+    public Chamado alterarStatus(
+            @PathVariable Long id,
+            @RequestParam String status) {
+
+        return chamadoService.alterarStatus(id, status);
     }
 }

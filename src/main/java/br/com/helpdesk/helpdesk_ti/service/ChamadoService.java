@@ -47,4 +47,15 @@ public class ChamadoService {
     public List<Chamado> buscarPorSolicitante(String solicitante) {
         return chamadoRepository.findBySolicitanteIgnoreCase(solicitante);
     }
+
+    public Chamado alterarStatus(Long id, String status) {
+        Chamado chamado = chamadoRepository.findById(id).orElse(null);
+
+        if (chamado != null) {
+            chamado.setStatus(status);
+            return chamadoRepository.save(chamado);
+        }
+
+        return null;
+    }
 }
