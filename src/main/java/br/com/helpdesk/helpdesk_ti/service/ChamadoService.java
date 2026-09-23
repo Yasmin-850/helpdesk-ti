@@ -39,4 +39,8 @@ public class ChamadoService {
     public List<Chamado> buscarPorPrioridade(String prioridade) {
         return chamadoRepository.findByPrioridadeIgnoreCase(prioridade);
     }
+
+    public List<Chamado> buscarPorSetor(String setor) {
+        return chamadoRepository.findBySetorIgnoreCase(setor);
+    }
 }
