@@ -27,4 +27,8 @@ public class ChamadoService {
     public void excluir(Long id) {
         chamadoRepository.deleteById(id);
     }
+
+    public List<Chamado> buscarPorStatus(String status) {
+        return chamadoRepository.findByStatusIgnoreCase(status);
+    }
 }
