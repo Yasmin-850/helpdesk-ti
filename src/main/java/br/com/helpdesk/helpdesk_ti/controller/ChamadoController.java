@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.helpdesk.helpdesk_ti.model.Chamado;
 import br.com.helpdesk.helpdesk_ti.service.ChamadoService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/chamados")
@@ -29,8 +30,33 @@ public class ChamadoController {
         return chamadoService.listarTodos();
     }
 
+    @GetMapping("/{id}")
+    public Chamado buscarPorId(@PathVariable Long id) {
+        return chamadoService.buscarPorId(id);
+    }
+
+    @GetMapping("/status/{status}")
+    public List<Chamado> buscarPorStatus(@PathVariable String status) {
+        return chamadoService.buscarPorStatus(status);
+    }
+
+    @GetMapping("/prioridade/{prioridade}")
+    public List<Chamado> buscarPorPrioridade(@PathVariable String prioridade) {
+        return chamadoService.buscarPorPrioridade(prioridade);
+    }
+
+    @GetMapping("/setor/{setor}")
+    public List<Chamado> buscarPorSetor(@PathVariable String setor) {
+        return chamadoService.buscarPorSetor(setor);
+    }
+
+    @GetMapping("/solicitante/{solicitante}")
+    public List<Chamado> buscarPorSolicitante(@PathVariable String solicitante) {
+        return chamadoService.buscarPorSolicitante(solicitante);
+    }
+
     @PostMapping
-    public Chamado criar(@RequestBody Chamado chamado) {
+    public Chamado criar(@Valid @RequestBody Chamado chamado) {
         return chamadoService.salvar(chamado);
     }
 
@@ -40,7 +66,10 @@ public class ChamadoController {
     }
 
     @PutMapping("/{id}")
-    public Chamado atualizar(@PathVariable Long id, @RequestBody Chamado chamado) {
+    public Chamado atualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody Chamado chamado) {
+
         chamado.setId(id);
         return chamadoService.salvar(chamado);
     }

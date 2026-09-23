@@ -20,11 +20,31 @@ public class ChamadoService {
         return chamadoRepository.findAll();
     }
 
+    public Chamado buscarPorId(Long id) {
+        return chamadoRepository.findById(id).orElse(null);
+    }
+
     public Chamado salvar(Chamado chamado) {
         return chamadoRepository.save(chamado);
     }
 
     public void excluir(Long id) {
         chamadoRepository.deleteById(id);
+    }
+
+    public List<Chamado> buscarPorStatus(String status) {
+        return chamadoRepository.findByStatusIgnoreCase(status);
+    }
+
+    public List<Chamado> buscarPorPrioridade(String prioridade) {
+        return chamadoRepository.findByPrioridadeIgnoreCase(prioridade);
+    }
+
+    public List<Chamado> buscarPorSetor(String setor) {
+        return chamadoRepository.findBySetorIgnoreCase(setor);
+    }
+
+    public List<Chamado> buscarPorSolicitante(String solicitante) {
+        return chamadoRepository.findBySolicitanteIgnoreCase(solicitante);
     }
 }
