@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 public class Chamado {
@@ -12,10 +13,17 @@ public class Chamado {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "O título é obrigatório")
     private String titulo;
+
     private String descricao;
+
+    @NotBlank(message = "O solicitante é obrigatório")
     private String solicitante;
+
+    @NotBlank(message = "O setor é obrigatório")
     private String setor;
+
     private String prioridade;
     private String status;
 
