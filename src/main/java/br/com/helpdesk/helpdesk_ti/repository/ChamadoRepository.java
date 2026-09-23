@@ -10,6 +10,8 @@ public interface ChamadoRepository extends JpaRepository<Chamado, Long> {
 
     List<Chamado> findByStatusIgnoreCase(String status);
 
+    List<Chamado> findBySetorIgnoreCase(String setor);
+
     List<Chamado> findByPrioridadeIgnoreCase(String prioridade);
 
 }

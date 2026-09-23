@@ -45,6 +45,11 @@ public class ChamadoController {
         return chamadoService.buscarPorPrioridade(prioridade);
     }
 
+    @GetMapping("/setor/{setor}")
+    public List<Chamado> buscarPorSetor(@PathVariable String setor) {
+        return chamadoService.buscarPorSetor(setor);
+    }
+
     @PostMapping
     public Chamado criar(@Valid @RequestBody Chamado chamado) {
         return chamadoService.salvar(chamado);
