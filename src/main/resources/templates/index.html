@@ -1,0 +1,3150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helpdesk TI | Sistema de Chamados</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --azul: #3156c8;
+            --azul-escuro: #172554;
+            --azul-claro: #eef3ff;
+            --fundo: #f5f7fb;
+            --texto: #1e293b;
+            --texto-claro: #64748b;
+            --borda: #e5eaf2;
+            --branco: #ffffff;
+            --verde: #16a34a;
+            --amarelo: #f59e0b;
+            --vermelho: #dc2626;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: var(--fundo);
+            color: var(--texto);
+        }
+
+        body.modal-aberto {
+            overflow: hidden;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* MENU LATERAL */
+
+        .sidebar {
+            width: 245px;
+            background: var(--azul-escuro);
+            color: white;
+            padding: 28px 18px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 10px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, .12);
+        }
+
+        .logo-icon {
+            width: 43px;
+            height: 43px;
+            background: var(--azul);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .logo h2 {
+            font-size: 19px;
+        }
+
+        .logo span {
+            display: block;
+            color: #aebbe0;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .menu-title {
+            color: #7f8db5;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            padding: 28px 12px 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 14px;
+            margin: 5px 0;
+            border-radius: 9px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 14px;
+            transition: .2s;
+            cursor: pointer;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: var(--azul);
+            color: white;
+        }
+
+        .menu-icon {
+            width: 23px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        /* CONTEÚDO */
+
+        .main {
+            margin-left: 245px;
+            width: calc(100% - 245px);
+        }
+
+        .topbar {
+            height: 75px;
+            background: white;
+            border-bottom: 1px solid var(--borda);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 35px;
+        }
+
+        .topbar-title h3 {
+            font-size: 16px;
+        }
+
+        .topbar-title p {
+            font-size: 12px;
+            color: var(--texto-claro);
+            margin-top: 3px;
+        }
+
+        .usuario {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .avatar {
+            width: 39px;
+            height: 39px;
+            border-radius: 50%;
+            background: var(--azul-claro);
+            color: var(--azul);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .usuario-info strong {
+            display: block;
+            font-size: 13px;
+        }
+
+        .usuario-info span {
+            font-size: 11px;
+            color: var(--texto-claro);
+        }
+
+        .btn-sair { border: none; background: #f1f5f9; color: #475569; padding: 8px 11px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .btn-sair:hover { background: #e2e8f0; }
+
+        .content {
+            padding: 32px 35px;
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        /* CABEÇALHO */
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .page-header h1 {
+            font-size: 27px;
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            color: var(--texto-claro);
+            font-size: 14px;
+        }
+
+        .btn-novo {
+            border: none;
+            background: var(--azul);
+            color: white;
+            padding: 12px 19px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(49, 86, 200, .22);
+            transition: .2s;
+        }
+
+        .btn-novo:hover {
+            transform: translateY(-1px);
+            background: #2849ae;
+        }
+
+        /* CARDS */
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--borda);
+            border-radius: 14px;
+            padding: 21px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, .04);
+        }
+
+        .card-label {
+            color: var(--texto-claro);
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card-number {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .card-icon {
+            width: 47px;
+            height: 47px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .icon-total {
+            background: #eef3ff;
+            color: var(--azul);
+        }
+
+        .icon-aberto {
+            background: #fff7df;
+            color: #d68a00;
+        }
+
+        .icon-andamento {
+            background: #e8f2ff;
+            color: #1976d2;
+        }
+
+        .icon-fechado {
+            background: #e9f8ee;
+            color: var(--verde);
+        }
+
+        /* PAINEL */
+
+        .panel {
+            background: white;
+            border: 1px solid var(--borda);
+            border-radius: 14px;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, .04);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 21px 23px;
+            border-bottom: 1px solid var(--borda);
+        }
+
+        .panel-header h2 {
+            font-size: 17px;
+        }
+
+        .panel-header p {
+            color: var(--texto-claro);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* FILTROS */
+
+        .filters {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 13px;
+            padding: 18px 23px;
+            border-bottom: 1px solid var(--borda);
+            background: #fbfcfe;
+        }
+
+        .input,
+        .select {
+            width: 100%;
+            border: 1px solid #d9e0ea;
+            border-radius: 8px;
+            padding: 11px 13px;
+            outline: none;
+            color: var(--texto);
+            background: white;
+        }
+
+        .input:focus,
+        .select:focus {
+            border-color: var(--azul);
+            box-shadow: 0 0 0 3px rgba(49, 86, 200, .08);
+        }
+
+        /* TABELA */
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f8fafc;
+        }
+
+        th {
+            color: #64748b;
+            text-align: left;
+            padding: 13px 20px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            border-bottom: 1px solid var(--borda);
+        }
+
+        td {
+            padding: 17px 20px;
+            border-bottom: 1px solid #edf0f5;
+            font-size: 13px;
+        }
+
+        tbody tr:hover {
+            background: #fafbfe;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 55px 20px;
+            color: var(--texto-claro);
+        }
+
+        .empty-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: var(--azul-claro);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            font-size: 25px;
+        }
+
+        .empty strong {
+            display: block;
+            color: var(--texto);
+            margin-bottom: 5px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge-aberto {
+            color: #9a6700;
+            background: #fff4ce;
+        }
+
+        .badge-andamento {
+            color: #1d5ea8;
+            background: #e4f0ff;
+        }
+
+        .badge-fechado {
+            color: #18723a;
+            background: #e3f7e9;
+        }
+
+        .badge-alta {
+            color: #b42318;
+            background: #feeceb;
+        }
+
+        .badge-media {
+            color: #9a6700;
+            background: #fff4ce;
+        }
+
+        .badge-baixa {
+            color: #18723a;
+            background: #e3f7e9;
+        }
+
+        .footer-info {
+            padding: 14px 23px;
+            color: var(--texto-claro);
+            font-size: 12px;
+            background: #fbfcfe;
+        }
+
+        /* BOTÃO AÇÕES */
+
+        .btn-acoes {
+            border: none;
+            background: transparent;
+            color: #334155;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 6px;
+        }
+
+        .btn-acoes:hover {
+            background: #eef2f7;
+        }
+
+        .menu-acoes {
+            position: fixed;
+            display: none;
+            width: 190px;
+            background: white;
+            border: 1px solid var(--borda);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, .18);
+            padding: 6px;
+            z-index: 3000;
+        }
+
+        .menu-acoes.ativo {
+            display: block;
+        }
+
+        .opcao-acao {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 10px 12px;
+            text-align: left;
+            border-radius: 7px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            color: var(--texto);
+        }
+
+        .opcao-acao:hover {
+            background: #f1f5f9;
+        }
+
+        .opcao-excluir {
+            color: var(--vermelho);
+        }
+
+        /* MODAIS */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, .58);
+            backdrop-filter: blur(3px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 3500;
+        }
+
+        .modal-overlay.ativo {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 650px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 25px 60px rgba(15, 23, 42, .28);
+            overflow: hidden;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-pequeno {
+            max-width: 470px;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding: 23px 25px;
+            border-bottom: 1px solid var(--borda);
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .modal-header p {
+            color: var(--texto-claro);
+            font-size: 13px;
+        }
+
+        .modal-fechar {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 8px;
+            background: #f1f5f9;
+            font-size: 23px;
+            cursor: pointer;
+        }
+
+        .modal-conteudo {
+            padding: 24px 25px;
+        }
+
+        #formNovoChamado,
+        #formEditarChamado,
+        #formAlterarStatus {
+            padding: 24px 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #d9e0ea;
+            border-radius: 8px;
+            font-family: inherit;
+            outline: none;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--azul);
+            box-shadow: 0 0 0 3px rgba(49, 86, 200, .08);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-cancelar,
+        .btn-salvar,
+        .btn-excluir {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 17px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-cancelar {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-salvar {
+            background: var(--azul);
+            color: white;
+        }
+
+        .btn-excluir {
+            background: var(--vermelho);
+            color: white;
+        }
+
+        .btn-salvar:disabled,
+        .btn-excluir:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        /* VISUALIZAÇÃO */
+
+        .detalhe-id {
+            font-size: 13px;
+            color: var(--azul);
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .detalhe-box {
+            padding: 14px;
+            background: #f8fafc;
+            border: 1px solid var(--borda);
+            border-radius: 9px;
+            min-height: 48px;
+            line-height: 1.5;
+        }
+
+        .detalhe-descricao {
+            min-height: 90px;
+            white-space: pre-wrap;
+        }
+
+        /* EXCLUSÃO */
+
+        .confirmacao-excluir {
+            text-align: center;
+            padding: 5px 0 22px;
+        }
+
+        .confirmacao-icon {
+            width: 62px;
+            height: 62px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #feeceb;
+            font-size: 26px;
+        }
+
+        .confirmacao-excluir h3 {
+            margin-bottom: 8px;
+        }
+
+        .confirmacao-excluir p {
+            color: var(--texto-claro);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* MENSAGEM */
+
+        .mensagem {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            padding: 14px 18px;
+            border-radius: 10px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 5000;
+            display: none;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, .18);
+        }
+
+        .mensagem.sucesso {
+            display: block;
+            background: var(--verde);
+        }
+
+        .mensagem.erro {
+            display: block;
+            background: var(--vermelho);
+        }
+
+        @media(max-width: 1050px) {
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media(max-width: 760px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .content {
+                padding: 22px 18px;
+            }
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .cards,
+            .filters,
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                align-items: flex-start;
+                gap: 18px;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">🎧</div>
+
+            <div>
+                <h2>Helpdesk TI</h2>
+                <span>Central de Suporte</span>
+            </div>
+        </div>
+
+        <div class="menu-title">MENU PRINCIPAL</div>
+
+        <a href="#" class="menu-item active" id="menuDashboard">
+            <span class="menu-icon">▦</span>
+            Dashboard
+        </a>
+
+        <a href="#" class="menu-item" id="menuChamados">
+            <span class="menu-icon">🎫</span>
+            Chamados
+        </a>
+
+        <a href="#" class="menu-item" id="menuNovoChamado">
+            <span class="menu-icon">＋</span>
+            Novo chamado
+        </a>
+
+        <div class="menu-title">GERENCIAMENTO</div>
+
+        <a href="#" class="menu-item" id="menuAndamento">
+            <span class="menu-icon">◉</span>
+            Em andamento
+        </a>
+
+        <a href="#" class="menu-item" id="menuFinalizados">
+            <span class="menu-icon">✓</span>
+            Finalizados
+        </a>
+
+        <a href="/usuarios" class="menu-item" id="menuUsuarios" style="display:none;">
+            <span class="menu-icon">👥</span>
+            Usuários
+        </a>
+
+    </aside>
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div class="topbar-title">
+                <h3>Central de Atendimento</h3>
+                <p>Gerenciamento de suporte técnico</p>
+            </div>
+
+            <div class="usuario" id="areaPerfil" title="Clique para visualizar ou editar seu perfil" style="cursor:pointer;">
+
+                <div class="avatar" id="avatarUsuario">TI</div>
+
+                <div class="usuario-info">
+                    <strong id="nomeUsuario">Carregando...</strong>
+                    <span id="perfilUsuario">Usuário</span>
+                </div>
+                <button type="button" class="btn-sair" id="btnSair">Sair</button>
+
+            </div>
+
+        </header>
+
+        <div class="content">
+
+            <section class="page-header" id="cabecalhoPagina">
+
+                <div>
+                    <h1 id="tituloPagina">Dashboard de Chamados</h1>
+                    <p id="subtituloPagina">Acompanhe e gerencie todas as solicitações de suporte.</p>
+                </div>
+
+                <button
+                    class="btn-novo"
+                    id="btnNovoChamado"
+                    type="button"
+                >
+                    ＋ Novo chamado
+                </button>
+
+            </section>
+
+            <section class="cards" id="cardsDashboard">
+
+                <div class="card">
+                    <div>
+                        <div class="card-label">Total de chamados</div>
+                        <div class="card-number" id="totalChamados">0</div>
+                    </div>
+
+                    <div class="card-icon icon-total">🎫</div>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <div class="card-label">Chamados abertos</div>
+                        <div class="card-number" id="totalAbertos">0</div>
+                    </div>
+
+                    <div class="card-icon icon-aberto">!</div>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <div class="card-label">Em andamento</div>
+                        <div class="card-number" id="totalAndamento">0</div>
+                    </div>
+
+                    <div class="card-icon icon-andamento">◷</div>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <div class="card-label">Finalizados</div>
+                        <div class="card-number" id="totalFechados">0</div>
+                    </div>
+
+                    <div class="card-icon icon-fechado">✓</div>
+                </div>
+
+            </section>
+
+            <section class="panel" id="painelChamados">
+
+                <div class="panel-header">
+                    <h2 id="tituloPainel">Chamados recentes</h2>
+                    <p id="subtituloPainel">Visualize e gerencie as solicitações cadastradas.</p>
+                </div>
+
+                <div class="filters">
+
+                    <input
+                        class="input"
+                        id="busca"
+                        type="text"
+                        placeholder="🔎 Buscar por título, solicitante ou setor..."
+                    >
+
+                    <select class="select" id="filtroStatus">
+                        <option value="">Todos os status</option>
+                        <option value="ABERTO">Aberto</option>
+                        <option value="EM_ANDAMENTO">Em andamento</option>
+                        <option value="FECHADO">Fechado</option>
+                    </select>
+
+                    <select class="select" id="filtroPrioridade">
+                        <option value="">Todas as prioridades</option>
+                        <option value="ALTA">Alta</option>
+                        <option value="MEDIA">Média</option>
+                        <option value="BAIXA">Baixa</option>
+                    </select>
+
+                </div>
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Título</th>
+                                <th>Solicitante</th>
+                                <th>Setor</th>
+                                <th>Prioridade</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tabelaChamados"></tbody>
+
+                    </table>
+
+                </div>
+
+                <div class="footer-info">
+                    Sistema de Chamados • Helpdesk TI
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- MODAL NOVO CHAMADO -->
+
+<div id="modalNovoChamado" class="modal-overlay">
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Novo chamado</h2>
+                <p>Preencha as informações da solicitação.</p>
+            </div>
+
+            <button
+                type="button"
+                class="modal-fechar"
+                id="btnFecharModal"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <form id="formNovoChamado">
+
+            <div class="form-group">
+                <label for="titulo">Título</label>
+                <input id="titulo" type="text" required>
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao" required></textarea>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="solicitante">Solicitante</label>
+                    <select id="solicitante" required><option value="">Selecione um usuário</option></select>
+                </div>
+
+                <div class="form-group">
+                    <label for="setor">Setor</label>
+                    <input id="setor" type="text" required>
+                </div>
+
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="prioridade">Prioridade</label>
+
+                    <select id="prioridade" required>
+                        <option value="">Selecione</option>
+                        <option value="BAIXA">Baixa</option>
+                        <option value="MEDIA">Média</option>
+                        <option value="ALTA">Alta</option>
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="status">Status</label>
+
+                    <select id="status" required>
+                        <option value="ABERTO">Aberto</option>
+                        <option value="EM_ANDAMENTO">Em andamento</option>
+                        <option value="FECHADO">Fechado</option>
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn-cancelar"
+                    id="btnCancelarChamado"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn-salvar"
+                    id="btnSalvarChamado"
+                >
+                    ＋ Criar chamado
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- MODAL VISUALIZAR -->
+
+<div id="modalVisualizarChamado" class="modal-overlay">
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Detalhes do chamado</h2>
+                <p>Informações completas da solicitação.</p>
+            </div>
+
+            <button
+                type="button"
+                class="modal-fechar"
+                id="btnFecharVisualizacao"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div class="modal-conteudo">
+
+            <div class="detalhe-id" id="visualizarId"></div>
+
+            <div class="form-group">
+                <label>Título</label>
+                <div class="detalhe-box" id="visualizarTitulo"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Descrição</label>
+                <div
+                    class="detalhe-box detalhe-descricao"
+                    id="visualizarDescricao"
+                ></div>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Solicitante</label>
+                    <div class="detalhe-box" id="visualizarSolicitante"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Setor</label>
+                    <div class="detalhe-box" id="visualizarSetor"></div>
+                </div>
+
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Prioridade</label>
+                    <div class="detalhe-box" id="visualizarPrioridade"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+                    <div class="detalhe-box" id="visualizarStatus"></div>
+                </div>
+
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn-cancelar"
+                    id="btnFecharVisualizacaoRodape"
+                >
+                    Fechar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- MODAL EDITAR -->
+
+<div id="modalEditarChamado" class="modal-overlay">
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Editar chamado</h2>
+                <p>Altere as informações da solicitação.</p>
+            </div>
+
+            <button
+                type="button"
+                class="modal-fechar"
+                id="btnFecharEdicao"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <form id="formEditarChamado">
+
+            <div class="form-group">
+                <label for="editarTitulo">Título</label>
+                <input id="editarTitulo" type="text" required>
+            </div>
+
+            <div class="form-group">
+                <label for="editarDescricao">Descrição</label>
+                <textarea id="editarDescricao" required></textarea>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="editarSolicitante">Solicitante</label>
+                    <select id="editarSolicitante" required><option value="">Selecione um usuário</option></select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editarSetor">Setor</label>
+                    <input id="editarSetor" type="text" required>
+                </div>
+
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="editarPrioridade">Prioridade</label>
+
+                    <select id="editarPrioridade" required>
+                        <option value="BAIXA">Baixa</option>
+                        <option value="MEDIA">Média</option>
+                        <option value="ALTA">Alta</option>
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="editarStatus">Status</label>
+
+                    <select id="editarStatus" required>
+                        <option value="ABERTO">Aberto</option>
+                        <option value="EM_ANDAMENTO">Em andamento</option>
+                        <option value="FECHADO">Fechado</option>
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn-cancelar"
+                    id="btnCancelarEdicao"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn-salvar"
+                    id="btnSalvarEdicao"
+                >
+                    Salvar alterações
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- MODAL ALTERAR STATUS -->
+
+<div id="modalAlterarStatus" class="modal-overlay">
+
+    <div class="modal modal-pequeno">
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Alterar status</h2>
+                <p>Escolha o novo status do chamado.</p>
+            </div>
+
+            <button
+                type="button"
+                class="modal-fechar"
+                id="btnFecharStatus"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <form id="formAlterarStatus">
+
+            <div class="form-group">
+
+                <label for="novoStatus">Status</label>
+
+                <select id="novoStatus" required>
+                    <option value="ABERTO">Aberto</option>
+                    <option value="EM_ANDAMENTO">Em andamento</option>
+                    <option value="FECHADO">Fechado</option>
+                </select>
+
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn-cancelar"
+                    id="btnCancelarStatus"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn-salvar"
+                    id="btnSalvarStatus"
+                >
+                    Alterar status
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- MODAL EXCLUIR -->
+
+<div id="modalExcluirChamado" class="modal-overlay">
+
+    <div class="modal modal-pequeno">
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Excluir chamado</h2>
+                <p>Confirme antes de continuar.</p>
+            </div>
+
+            <button
+                type="button"
+                class="modal-fechar"
+                id="btnFecharExclusao"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div class="modal-conteudo">
+
+            <div class="confirmacao-excluir">
+
+                <div class="confirmacao-icon">🗑️</div>
+
+                <h3>Deseja excluir este chamado?</h3>
+
+                <p id="textoConfirmacaoExclusao">
+                    Esta ação não poderá ser desfeita.
+                </p>
+
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="btn-cancelar"
+                    id="btnCancelarExclusao"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-excluir"
+                    id="btnConfirmarExclusao"
+                >
+                    Excluir chamado
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- MENU DOS TRÊS PONTINHOS -->
+
+<div id="menuAcoes" class="menu-acoes">
+
+    <button
+        type="button"
+        class="opcao-acao"
+        id="acaoVisualizar"
+    >
+        👁 Visualizar
+    </button>
+
+    <button
+        type="button"
+        class="opcao-acao"
+        id="acaoEditar"
+    >
+        ✏️ Editar
+    </button>
+
+    <button
+        type="button"
+        class="opcao-acao"
+        id="acaoStatus"
+    >
+        🔄 Alterar status
+    </button>
+
+    <button
+        type="button"
+        class="opcao-acao opcao-excluir"
+        id="acaoExcluir"
+    >
+        🗑 Excluir
+    </button>
+
+</div>
+
+
+
+<div id="modalPerfil" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header"><div><h2>Meu perfil</h2><p>Visualize e atualize seus dados.</p></div><button class="modal-close" type="button" id="fecharPerfil">×</button></div>
+    <form id="formPerfil">
+      <div class="form-grid"><div class="form-group"><label for="perfilNome">Nome</label><input id="perfilNome" required></div><div class="form-group"><label for="perfilEmail">E-mail</label><input id="perfilEmail" type="email" required></div></div>
+      <div class="form-grid"><div class="form-group"><label for="perfilTipo">Perfil</label><input id="perfilTipo" readonly></div><div class="form-group"><label for="perfilSetor">Setor</label><input id="perfilSetor"></div></div>
+      <div class="modal-actions"><button class="btn-cancelar" type="button" id="cancelarPerfil">Cancelar</button><button class="btn-salvar" type="submit">Salvar perfil</button></div>
+    </form>
+  </div>
+</div>
+
+<div id="mensagem" class="mensagem"></div>
+
+
+<script>
+
+    let chamados = [];
+    let chamadoSelecionadoId = null;
+    let usuarioLogado = null;
+    let usuariosCadastrados = [];
+
+
+    /* ELEMENTOS */
+
+    const modalNovo =
+        document.getElementById("modalNovoChamado");
+
+    const modalVisualizar =
+        document.getElementById("modalVisualizarChamado");
+
+    const modalEditar =
+        document.getElementById("modalEditarChamado");
+
+    const modalStatus =
+        document.getElementById("modalAlterarStatus");
+
+    const modalExcluir =
+        document.getElementById("modalExcluirChamado");
+
+    const modalPerfil = document.getElementById("modalPerfil");
+
+
+    const formularioNovo =
+        document.getElementById("formNovoChamado");
+
+    const formularioEditar =
+        document.getElementById("formEditarChamado");
+
+    const formularioStatus =
+        document.getElementById("formAlterarStatus");
+
+
+    const btnNovoChamado =
+        document.getElementById("btnNovoChamado");
+
+    const menuNovoChamado =
+        document.getElementById("menuNovoChamado");
+
+    const btnSalvarChamado =
+        document.getElementById("btnSalvarChamado");
+
+    const btnSalvarEdicao =
+        document.getElementById("btnSalvarEdicao");
+
+    const btnSalvarStatus =
+        document.getElementById("btnSalvarStatus");
+
+    const btnConfirmarExclusao =
+        document.getElementById("btnConfirmarExclusao");
+
+
+    const busca =
+        document.getElementById("busca");
+
+    const filtroStatus =
+        document.getElementById("filtroStatus");
+
+    const filtroPrioridade =
+        document.getElementById("filtroPrioridade");
+
+    const menuAcoes =
+        document.getElementById("menuAcoes");
+
+
+    /* FUNÇÕES GERAIS */
+
+    function abrirModal(modal) {
+
+        fecharMenuAcoes();
+
+        modal.classList.add("ativo");
+
+        document.body.classList.add("modal-aberto");
+    }
+
+
+    function fecharModal(modal) {
+
+        modal.classList.remove("ativo");
+
+        const existeModalAberto =
+            document.querySelector(".modal-overlay.ativo");
+
+        if (!existeModalAberto) {
+            document.body.classList.remove("modal-aberto");
+        }
+    }
+
+
+    function buscarChamadoSelecionado() {
+
+        return chamados.find(
+            chamado =>
+                Number(chamado.id) ===
+                Number(chamadoSelecionadoId)
+        );
+    }
+
+
+    function textoStatus(status) {
+
+        if (status === "EM_ANDAMENTO") {
+            return "Em andamento";
+        }
+
+        if (status === "FECHADO") {
+            return "Fechado";
+        }
+
+        return "Aberto";
+    }
+
+
+    function textoPrioridade(prioridade) {
+
+        if (prioridade === "ALTA") {
+            return "Alta";
+        }
+
+        if (prioridade === "MEDIA") {
+            return "Média";
+        }
+
+        if (prioridade === "BAIXA") {
+            return "Baixa";
+        }
+
+        return prioridade || "-";
+    }
+
+
+    /* USUÁRIO / SESSÃO */
+
+    async function carregarUsuario() {
+        const resposta = await fetch("/auth/me");
+        if (!resposta.ok) { window.location.href = "/login"; return false; }
+        usuarioLogado = await resposta.json();
+        document.getElementById("nomeUsuario").textContent = usuarioLogado.nome;
+        document.getElementById("perfilUsuario").textContent = usuarioLogado.perfil === "ADMIN" ? "Administrador" : "Solicitante";
+        document.getElementById("avatarUsuario").textContent = usuarioLogado.perfil === "ADMIN" ? "TI" : (usuarioLogado.nome || "U").charAt(0).toUpperCase();
+        const admin = usuarioLogado.perfil === "ADMIN";
+        document.getElementById("menuUsuarios").style.display = admin ? "flex" : "none";
+        document.getElementById("acaoStatus").style.display = "block";
+        document.getElementById("acaoExcluir").style.display = admin ? "block" : "none";
+        await carregarUsuariosParaChamado();
+        if (!admin) {
+            document.getElementById("solicitante").disabled = true;
+            document.getElementById("setor").readOnly = true;
+            document.getElementById("status").value = "ABERTO";
+            document.getElementById("status").disabled = true;
+            document.getElementById("editarStatus").disabled = true;
+            document.getElementById("novoStatus").innerHTML =
+                '<option value="ABERTO">Aberto</option><option value="FECHADO">Fechado</option>';
+        }
+        return true;
+    }
+
+    async function carregarUsuariosParaChamado() {
+        const admin = usuarioLogado && usuarioLogado.perfil === "ADMIN";
+        if (admin) {
+            const r = await fetch("/api/usuarios");
+            if (r.ok) usuariosCadastrados = await r.json();
+        } else {
+            usuariosCadastrados = [{id:usuarioLogado.id,nome:usuarioLogado.nome,email:usuarioLogado.email,perfil:usuarioLogado.perfil,setor:usuarioLogado.setor}];
+        }
+        ["solicitante","editarSolicitante"].forEach(id => {
+            const el=document.getElementById(id); if(!el) return;
+            el.innerHTML='<option value="">Selecione um usuário</option>'+usuariosCadastrados.map(u=>`<option value="${escaparHTML(u.email)}" data-setor="${escaparHTML(u.setor||'')}">${escaparHTML(u.nome)} — ${escaparHTML(u.email)}</option>`).join('');
+        });
+        if(!admin){
+            document.getElementById("solicitante").value=usuarioLogado.email;
+            document.getElementById("setor").value=usuarioLogado.setor||"";
+        }
+    }
+
+    function aplicarSetorDoUsuario(selectId,setorId){
+        const sel=document.getElementById(selectId); const opt=sel.options[sel.selectedIndex];
+        document.getElementById(setorId).value=opt ? (opt.dataset.setor||"") : "";
+    }
+    document.getElementById("solicitante").addEventListener("change",()=>aplicarSetorDoUsuario("solicitante","setor"));
+    document.getElementById("editarSolicitante").addEventListener("change",()=>aplicarSetorDoUsuario("editarSolicitante","editarSetor"));
+
+    document.getElementById("areaPerfil").addEventListener("click", async function(e){
+        if(e.target && e.target.id === "btnSair") return;
+        const r=await fetch("/api/usuarios/me"); if(!r.ok) return; const u=await r.json();
+        perfilNome.value=u.nome||""; perfilEmail.value=u.email||""; perfilSetor.value=u.setor||""; perfilTipo.value=u.perfil==="ADMIN"?"Administrador":"Solicitante";
+        abrirModal(modalPerfil);
+    });
+    document.getElementById("fecharPerfil").onclick=()=>fecharModal(modalPerfil);
+    document.getElementById("cancelarPerfil").onclick=()=>fecharModal(modalPerfil);
+    document.getElementById("formPerfil").addEventListener("submit",async function(e){
+        e.preventDefault();
+        const r=await fetch("/api/usuarios/me",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({nome:perfilNome.value.trim(),email:perfilEmail.value.trim(),setor:perfilSetor.value.trim(),perfil:usuarioLogado.perfil})});
+        if(!r.ok){mostrarMensagem("Não foi possível atualizar o perfil.","erro");return;}
+        usuarioLogado=await r.json(); document.getElementById("nomeUsuario").textContent=usuarioLogado.nome;
+        document.getElementById("perfilUsuario").textContent=usuarioLogado.perfil === "ADMIN" ? "Administrador" : "Solicitante";
+        await carregarUsuariosParaChamado(); fecharModal(modalPerfil); mostrarMensagem("Perfil atualizado com sucesso!","sucesso");
+    });
+
+    document.getElementById("btnSair").addEventListener("click", async function () {
+        await fetch("/auth/logout", { method: "POST" });
+        window.location.href = "/login";
+    });
+
+    /* CARREGAR */
+
+    async function carregarChamados() {
+
+        try {
+
+            const resposta =
+                await fetch("/chamados");
+
+
+            if (resposta.status === 401) { window.location.href = "/login"; return; }
+            if (!resposta.ok) {
+                throw new Error("Erro ao buscar chamados");
+            }
+
+
+            chamados =
+                await resposta.json();
+
+
+            atualizarCards();
+
+            aplicarFiltros();
+
+
+        } catch (erro) {
+
+            console.error(erro);
+
+
+            document
+                .getElementById("tabelaChamados")
+                .innerHTML = `
+
+                    <tr>
+
+                        <td colspan="7">
+
+                            <div class="empty">
+
+                                <div class="empty-icon">
+                                    ⚠️
+                                </div>
+
+                                <strong>
+                                    Não foi possível carregar os chamados
+                                </strong>
+
+                                <span>
+                                    Verifique se o servidor está funcionando.
+                                </span>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+                `;
+        }
+    }
+
+
+    /* CARDS */
+
+    function atualizarCards() {
+
+        document
+            .getElementById("totalChamados")
+            .textContent =
+            chamados.length;
+
+
+        document
+            .getElementById("totalAbertos")
+            .textContent =
+            chamados.filter(
+                chamado =>
+                    chamado.status === "ABERTO"
+            ).length;
+
+
+        document
+            .getElementById("totalAndamento")
+            .textContent =
+            chamados.filter(
+                chamado =>
+                    chamado.status === "EM_ANDAMENTO"
+            ).length;
+
+
+        document
+            .getElementById("totalFechados")
+            .textContent =
+            chamados.filter(
+                chamado =>
+                    chamado.status === "FECHADO"
+            ).length;
+    }
+
+
+    /* TABELA */
+
+    function mostrarChamados(lista) {
+
+        const tabela =
+            document.getElementById("tabelaChamados");
+
+
+        if (lista.length === 0) {
+
+            tabela.innerHTML = `
+
+                <tr>
+
+                    <td colspan="7">
+
+                        <div class="empty">
+
+                            <div class="empty-icon">
+                                🎫
+                            </div>
+
+                            <strong>
+                                Nenhum chamado encontrado
+                            </strong>
+
+                            <span>
+                                Os chamados aparecerão aqui.
+                            </span>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        tabela.innerHTML =
+            lista.map(chamado => {
+
+
+                const classePrioridade =
+
+                    chamado.prioridade === "ALTA"
+
+                        ? "badge-alta"
+
+                        : chamado.prioridade === "MEDIA"
+
+                            ? "badge-media"
+
+                            : "badge-baixa";
+
+
+                const classeStatus =
+
+                    chamado.status === "ABERTO"
+
+                        ? "badge-aberto"
+
+                        : chamado.status === "EM_ANDAMENTO"
+
+                            ? "badge-andamento"
+
+                            : "badge-fechado";
+
+
+                return `
+
+                    <tr>
+
+                        <td>
+                            #${chamado.id}
+                        </td>
+
+                        <td>
+                            <strong>
+                                ${escaparHTML(chamado.titulo)}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${escaparHTML(chamado.solicitante)}
+                        </td>
+
+                        <td>
+                            ${escaparHTML(chamado.setor)}
+                        </td>
+
+                        <td>
+
+                            <span class="badge ${classePrioridade}">
+
+                                ${escaparHTML(
+                                    textoPrioridade(
+                                        chamado.prioridade
+                                    )
+                                )}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <span class="badge ${classeStatus}">
+
+                                ${escaparHTML(
+                                    textoStatus(
+                                        chamado.status
+                                    )
+                                )}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <button
+                                type="button"
+                                class="btn-acoes"
+                                onclick="abrirMenuAcoes(event, ${chamado.id})"
+                                title="Ações do chamado"
+                            >
+                                •••
+                            </button>
+
+                        </td>
+
+                    </tr>
+                `;
+
+            }).join("");
+    }
+
+
+    /* FILTROS */
+
+    function aplicarFiltros() {
+
+        const texto =
+            busca.value.trim().toLowerCase();
+
+        const status =
+            filtroStatus.value;
+
+        const prioridade =
+            filtroPrioridade.value;
+
+
+        const resultado =
+            chamados.filter(chamado => {
+
+
+                const titulo =
+                    (chamado.titulo || "")
+                        .toLowerCase();
+
+                const solicitante =
+                    (chamado.solicitante || "")
+                        .toLowerCase();
+
+                const setor =
+                    (chamado.setor || "")
+                        .toLowerCase();
+
+
+                const correspondeBusca =
+
+                    titulo.includes(texto) ||
+
+                    solicitante.includes(texto) ||
+
+                    setor.includes(texto);
+
+
+                const correspondeStatus =
+
+                    !status ||
+
+                    chamado.status === status;
+
+
+                const correspondePrioridade =
+
+                    !prioridade ||
+
+                    chamado.prioridade === prioridade;
+
+
+                return (
+
+                    correspondeBusca &&
+
+                    correspondeStatus &&
+
+                    correspondePrioridade
+                );
+            });
+
+
+        mostrarChamados(resultado);
+    }
+
+
+    busca.addEventListener(
+        "input",
+        aplicarFiltros
+    );
+
+
+    filtroStatus.addEventListener(
+        "change",
+        aplicarFiltros
+    );
+
+
+    filtroPrioridade.addEventListener(
+        "change",
+        aplicarFiltros
+    );
+
+
+    /* MENU DE AÇÕES */
+
+    function abrirMenuAcoes(event, id) {
+
+        event.stopPropagation();
+
+        chamadoSelecionadoId = id;
+
+
+        const botao =
+            event.currentTarget;
+
+        const posicao =
+            botao.getBoundingClientRect();
+
+
+        menuAcoes.style.left =
+            Math.max(
+                10,
+                posicao.right - 190
+            ) + "px";
+
+
+        menuAcoes.style.top =
+            (posicao.bottom + 5) + "px";
+
+
+        menuAcoes.classList.add("ativo");
+    }
+
+
+    function fecharMenuAcoes() {
+
+        menuAcoes.classList.remove("ativo");
+    }
+
+
+    document.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                !menuAcoes.contains(event.target) &&
+                !event.target.closest(".btn-acoes")
+            ) {
+
+                fecharMenuAcoes();
+            }
+        }
+    );
+
+
+    window.addEventListener(
+        "scroll",
+        fecharMenuAcoes,
+        true
+    );
+
+
+    window.addEventListener(
+        "resize",
+        fecharMenuAcoes
+    );
+
+
+    /* NOVO CHAMADO */
+
+    btnNovoChamado.addEventListener(
+        "click",
+        function () {
+
+            formularioNovo.reset();
+            if (usuarioLogado && usuarioLogado.perfil !== "ADMIN") {
+                document.getElementById("solicitante").value = usuarioLogado.email;
+                document.getElementById("setor").value = usuarioLogado.setor || "";
+            }
+
+            document
+                .getElementById("status")
+                .value =
+                "ABERTO";
+
+            abrirModal(modalNovo);
+
+            setTimeout(
+                function () {
+
+                    document
+                        .getElementById("titulo")
+                        .focus();
+
+                },
+                100
+            );
+        }
+    );
+
+
+    menuNovoChamado.addEventListener(
+        "click",
+        function (event) {
+
+            event.preventDefault();
+
+            btnNovoChamado.click();
+        }
+    );
+
+
+    formularioNovo.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            const novoChamado = {
+
+                titulo:
+                    document
+                        .getElementById("titulo")
+                        .value
+                        .trim(),
+
+                descricao:
+                    document
+                        .getElementById("descricao")
+                        .value
+                        .trim(),
+
+                solicitante:
+                    (document.getElementById("solicitante").selectedOptions[0]?.textContent || "").split(" — ")[0].trim(),
+
+                criadorEmail:
+                    document.getElementById("solicitante").value,
+
+                setor:
+                    document
+                        .getElementById("setor")
+                        .value
+                        .trim(),
+
+                prioridade:
+                    document
+                        .getElementById("prioridade")
+                        .value,
+
+                status:
+                    document
+                        .getElementById("status")
+                        .value
+            };
+
+
+            btnSalvarChamado.disabled = true;
+
+            btnSalvarChamado.textContent =
+                "Criando...";
+
+
+            try {
+
+                const resposta =
+                    await fetch(
+                        "/chamados",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    novoChamado
+                                )
+                        }
+                    );
+
+
+                if (!resposta.ok) {
+
+                    const detalhes =
+                        await resposta.text();
+
+                    console.error(
+                        resposta.status,
+                        detalhes
+                    );
+
+                    throw new Error(
+                        "Erro ao criar chamado"
+                    );
+                }
+
+
+                await resposta.json();
+
+
+                formularioNovo.reset();
+
+                fecharModal(modalNovo);
+
+
+                mostrarMensagem(
+                    "Chamado criado com sucesso!",
+                    "sucesso"
+                );
+
+
+                await carregarChamados();
+
+
+            } catch (erro) {
+
+                console.error(erro);
+
+                mostrarMensagem(
+                    "Erro ao criar chamado.",
+                    "erro"
+                );
+
+
+            } finally {
+
+                btnSalvarChamado.disabled =
+                    false;
+
+                btnSalvarChamado.textContent =
+                    "＋ Criar chamado";
+            }
+        }
+    );
+
+
+    /* VISUALIZAR */
+
+    document
+        .getElementById("acaoVisualizar")
+        .addEventListener(
+            "click",
+            function () {
+
+                const chamado =
+                    buscarChamadoSelecionado();
+
+
+                if (!chamado) {
+
+                    mostrarMensagem(
+                        "Chamado não encontrado.",
+                        "erro"
+                    );
+
+                    return;
+                }
+
+
+                document
+                    .getElementById("visualizarId")
+                    .textContent =
+                    "Chamado #" + chamado.id;
+
+
+                document
+                    .getElementById("visualizarTitulo")
+                    .textContent =
+                    chamado.titulo || "-";
+
+
+                document
+                    .getElementById("visualizarDescricao")
+                    .textContent =
+                    chamado.descricao || "-";
+
+
+                document
+                    .getElementById("visualizarSolicitante")
+                    .textContent =
+                    chamado.solicitante || "-";
+
+
+                document
+                    .getElementById("visualizarSetor")
+                    .textContent =
+                    chamado.setor || "-";
+
+
+                document
+                    .getElementById("visualizarPrioridade")
+                    .textContent =
+                    textoPrioridade(
+                        chamado.prioridade
+                    );
+
+
+                document
+                    .getElementById("visualizarStatus")
+                    .textContent =
+                    textoStatus(
+                        chamado.status
+                    );
+
+
+                abrirModal(
+                    modalVisualizar
+                );
+            }
+        );
+
+
+    /* EDITAR */
+
+    document
+        .getElementById("acaoEditar")
+        .addEventListener(
+            "click",
+            function () {
+
+                const chamado =
+                    buscarChamadoSelecionado();
+
+
+                if (!chamado) {
+
+                    mostrarMensagem(
+                        "Chamado não encontrado.",
+                        "erro"
+                    );
+
+                    return;
+                }
+
+
+                document
+                    .getElementById("editarTitulo")
+                    .value =
+                    chamado.titulo || "";
+
+
+                document
+                    .getElementById("editarDescricao")
+                    .value =
+                    chamado.descricao || "";
+
+
+                document.getElementById("editarSolicitante").value = chamado.criadorEmail || "";
+
+
+                document
+                    .getElementById("editarSetor")
+                    .value =
+                    chamado.setor || "";
+
+
+                document
+                    .getElementById("editarPrioridade")
+                    .value =
+                    chamado.prioridade || "MEDIA";
+
+
+                document
+                    .getElementById("editarStatus")
+                    .value =
+                    chamado.status || "ABERTO";
+
+
+                abrirModal(modalEditar);
+            }
+        );
+
+
+    formularioEditar.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            const chamado =
+                buscarChamadoSelecionado();
+
+
+            if (!chamado) {
+
+                mostrarMensagem(
+                    "Chamado não encontrado.",
+                    "erro"
+                );
+
+                return;
+            }
+
+
+            const chamadoAtualizado = {
+
+                titulo:
+                    document
+                        .getElementById("editarTitulo")
+                        .value
+                        .trim(),
+
+                descricao:
+                    document
+                        .getElementById("editarDescricao")
+                        .value
+                        .trim(),
+
+                solicitante:
+                    (document.getElementById("editarSolicitante").selectedOptions[0]?.textContent || "").split(" — ")[0].trim(),
+
+                criadorEmail:
+                    document.getElementById("editarSolicitante").value,
+
+                setor:
+                    document
+                        .getElementById("editarSetor")
+                        .value
+                        .trim(),
+
+                prioridade:
+                    document
+                        .getElementById("editarPrioridade")
+                        .value,
+
+                status:
+                    document
+                        .getElementById("editarStatus")
+                        .value
+            };
+
+
+            btnSalvarEdicao.disabled =
+                true;
+
+            btnSalvarEdicao.textContent =
+                "Salvando...";
+
+
+            try {
+
+                const resposta =
+                    await fetch(
+                        "/chamados/" +
+                        chamadoSelecionadoId,
+                        {
+
+                            method: "PUT",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    chamadoAtualizado
+                                )
+                        }
+                    );
+
+
+                if (!resposta.ok) {
+
+                    const detalhes =
+                        await resposta.text();
+
+                    console.error(
+                        resposta.status,
+                        detalhes
+                    );
+
+                    throw new Error(
+                        "Erro ao editar chamado"
+                    );
+                }
+
+
+                await resposta.json();
+
+
+                fecharModal(modalEditar);
+
+
+                mostrarMensagem(
+                    "Chamado atualizado com sucesso!",
+                    "sucesso"
+                );
+
+
+                await carregarChamados();
+
+
+            } catch (erro) {
+
+                console.error(erro);
+
+                mostrarMensagem(
+                    "Erro ao atualizar chamado.",
+                    "erro"
+                );
+
+
+            } finally {
+
+                btnSalvarEdicao.disabled =
+                    false;
+
+                btnSalvarEdicao.textContent =
+                    "Salvar alterações";
+            }
+        }
+    );
+
+
+    /* ALTERAR STATUS */
+
+    document
+        .getElementById("acaoStatus")
+        .addEventListener(
+            "click",
+            function () {
+
+                const chamado =
+                    buscarChamadoSelecionado();
+
+
+                if (!chamado) {
+
+                    mostrarMensagem(
+                        "Chamado não encontrado.",
+                        "erro"
+                    );
+
+                    return;
+                }
+
+
+                document
+                    .getElementById("novoStatus")
+                    .value =
+                    chamado.status || "ABERTO";
+
+
+                abrirModal(modalStatus);
+            }
+        );
+
+
+    formularioStatus.addEventListener(
+        "submit",
+        async function (event) {
+            event.preventDefault();
+
+            const chamado = buscarChamadoSelecionado();
+            if (!chamado) {
+                mostrarMensagem("Chamado não encontrado.", "erro");
+                return;
+            }
+
+            const novoStatus = document.getElementById("novoStatus").value;
+            btnSalvarStatus.disabled = true;
+            btnSalvarStatus.textContent = "Alterando...";
+
+            try {
+                const resposta = await fetch(
+                    "/chamados/" + chamadoSelecionadoId +
+                    "/status?status=" + encodeURIComponent(novoStatus),
+                    { method: "PUT" }
+                );
+
+                if (!resposta.ok) {
+                    const detalhes = await resposta.text();
+                    console.error(resposta.status, detalhes);
+                    throw new Error("Erro ao alterar status");
+                }
+
+                const atualizado = await resposta.json();
+                const indice = chamados.findIndex(c => Number(c.id) === Number(atualizado.id));
+                if (indice >= 0) chamados[indice] = atualizado;
+
+                fecharModal(modalStatus);
+                await carregarChamados();
+                mostrarMensagem("Status alterado com sucesso!", "sucesso");
+            } catch (erro) {
+                console.error(erro);
+                mostrarMensagem("Erro ao alterar status.", "erro");
+            } finally {
+                btnSalvarStatus.disabled = false;
+                btnSalvarStatus.textContent = "Alterar status";
+            }
+        }
+    );
+
+
+    /* EXCLUIR */
+
+    document
+        .getElementById("acaoExcluir")
+        .addEventListener(
+            "click",
+            function () {
+
+                const chamado =
+                    buscarChamadoSelecionado();
+
+
+                if (!chamado) {
+
+                    mostrarMensagem(
+                        "Chamado não encontrado.",
+                        "erro"
+                    );
+
+                    return;
+                }
+
+
+                document
+                    .getElementById(
+                        "textoConfirmacaoExclusao"
+                    )
+                    .textContent =
+
+                    'O chamado #' +
+                    chamado.id +
+                    ' "' +
+                    (chamado.titulo || "") +
+                    '" será excluído permanentemente.';
+
+
+                abrirModal(modalExcluir);
+            }
+        );
+
+
+    btnConfirmarExclusao.addEventListener(
+        "click",
+        async function () {
+
+            const chamado =
+                buscarChamadoSelecionado();
+
+
+            if (!chamado) {
+
+                mostrarMensagem(
+                    "Chamado não encontrado.",
+                    "erro"
+                );
+
+                return;
+            }
+
+
+            btnConfirmarExclusao.disabled =
+                true;
+
+            btnConfirmarExclusao.textContent =
+                "Excluindo...";
+
+
+            try {
+
+                const resposta =
+                    await fetch(
+                        "/chamados/" +
+                        chamadoSelecionadoId,
+                        {
+                            method: "DELETE"
+                        }
+                    );
+
+
+                if (!resposta.ok) {
+
+                    const detalhes =
+                        await resposta.text();
+
+                    console.error(
+                        resposta.status,
+                        detalhes
+                    );
+
+                    throw new Error(
+                        "Erro ao excluir chamado"
+                    );
+                }
+
+
+                fecharModal(modalExcluir);
+
+
+                mostrarMensagem(
+                    "Chamado excluído com sucesso!",
+                    "sucesso"
+                );
+
+
+                chamadoSelecionadoId =
+                    null;
+
+
+                await carregarChamados();
+
+
+            } catch (erro) {
+
+                console.error(erro);
+
+                mostrarMensagem(
+                    "Erro ao excluir chamado.",
+                    "erro"
+                );
+
+
+            } finally {
+
+                btnConfirmarExclusao.disabled =
+                    false;
+
+                btnConfirmarExclusao.textContent =
+                    "Excluir chamado";
+            }
+        }
+    );
+
+
+    /* FECHAR MODAIS */
+
+    document
+        .getElementById("btnFecharModal")
+        .addEventListener(
+            "click",
+            function () {
+                fecharModal(modalNovo);
+            }
+        );
+
+
+    document
+        .getElementById("btnCancelarChamado")
+        .addEventListener(
+            "click",
+            function () {
+                fecharModal(modalNovo);
+            }
+        );
+
+
+    document
+        .getElementById("btnFecharVisualizacao")
+        .addEventListener(
+            "click",
+            function () {
+                fecharModal(modalVisualizar);
+            }
+        );
+
+
+    document
+        .getElementById("btnFecharVisualizacaoRodape")
+        .addEventListener(
+            "click",
+            function () {
+                fecharModal(modalVisualizar);
+            }
+        );
+
+
+    document
+        .getElementById("btnFecharEdicao")
+        .addEventListener(
+            "click",
+            function () {
+                fecharModal(modalEditar);
+            }
+        );
+
+
+    document
+        .getElementById("btnCancelarEdicao")
+        .addEventListener(
+            "click",
+            function () {
+                fecharModal(modalEditar);
+            }
+        );
+
+
+    document
+        .getElementById("btnFecharStatus")
+        .addEventListener(
+            "click",
+            function () {
+                fecharModal(modalStatus);
+            }
+        );
+
+
+    document
+        .getElementById("btnCancelarStatus")
+        .addEventListener(
+            "click",
+            function () {
+                fecharModal(modalStatus);
+            }
+        );
+
+
+    document
+        .getElementById("btnFecharExclusao")
+        .addEventListener(
+            "click",
+            function () {
+                fecharModal(modalExcluir);
+            }
+        );
+
+
+    document
+        .getElementById("btnCancelarExclusao")
+        .addEventListener(
+            "click",
+            function () {
+                fecharModal(modalExcluir);
+            }
+        );
+
+
+    [
+        modalNovo,
+        modalVisualizar,
+        modalEditar,
+        modalStatus,
+        modalExcluir
+
+    ].forEach(
+        function (modal) {
+
+            modal.addEventListener(
+                "click",
+                function (event) {
+
+                    if (event.target === modal) {
+
+                        fecharModal(modal);
+                    }
+                }
+            );
+        }
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (event.key !== "Escape") {
+                return;
+            }
+
+
+            fecharMenuAcoes();
+
+
+            [
+                modalNovo,
+                modalVisualizar,
+                modalEditar,
+                modalStatus,
+                modalExcluir
+
+            ].forEach(
+                function (modal) {
+
+                    if (
+                        modal.classList.contains(
+                            "ativo"
+                        )
+                    ) {
+
+                        fecharModal(modal);
+                    }
+                }
+            );
+        }
+    );
+
+
+    /* MENU LATERAL */
+
+    function marcarMenuAtivo(idMenu) {
+
+        document
+            .querySelectorAll(".menu-item")
+            .forEach(function (item) {
+                item.classList.remove("active");
+            });
+
+        const itemAtivo =
+            document.getElementById(idMenu);
+
+        if (itemAtivo) {
+            itemAtivo.classList.add("active");
+        }
+    }
+
+
+    function exibirDashboard() {
+
+        document
+            .getElementById("cardsDashboard")
+            .style.display = "grid";
+
+        document
+            .getElementById("tituloPagina")
+            .textContent = "Dashboard de Chamados";
+
+        document
+            .getElementById("subtituloPagina")
+            .textContent =
+            "Acompanhe e gerencie todas as solicitações de suporte.";
+
+        document
+            .getElementById("tituloPainel")
+            .textContent = "Chamados recentes";
+
+        document
+            .getElementById("subtituloPainel")
+            .textContent =
+            "Visualize e gerencie as solicitações cadastradas.";
+
+        filtroStatus.value = "";
+        filtroPrioridade.value = "";
+        busca.value = "";
+
+        aplicarFiltros();
+        marcarMenuAtivo("menuDashboard");
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+
+
+    function exibirTodosChamados() {
+
+        document
+            .getElementById("cardsDashboard")
+            .style.display = "none";
+
+        document
+            .getElementById("tituloPagina")
+            .textContent = "Todos os Chamados";
+
+        document
+            .getElementById("subtituloPagina")
+            .textContent =
+            "Consulte, pesquise e gerencie todos os chamados cadastrados.";
+
+        document
+            .getElementById("tituloPainel")
+            .textContent = "Lista de chamados";
+
+        document
+            .getElementById("subtituloPainel")
+            .textContent =
+            "Todos os chamados cadastrados no sistema.";
+
+        filtroStatus.value = "";
+        filtroPrioridade.value = "";
+        busca.value = "";
+
+        aplicarFiltros();
+        marcarMenuAtivo("menuChamados");
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+
+
+    document
+        .getElementById("menuChamados")
+        .addEventListener(
+            "click",
+            function (event) {
+                event.preventDefault();
+                exibirTodosChamados();
+            }
+        );
+
+
+    document
+        .getElementById("menuDashboard")
+        .addEventListener(
+            "click",
+            function (event) {
+                event.preventDefault();
+                exibirDashboard();
+            }
+        );
+
+
+    document
+        .getElementById("menuAndamento")
+        .addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+
+
+                document
+                    .getElementById("cardsDashboard")
+                    .style.display = "none";
+
+                document
+                    .getElementById("tituloPagina")
+                    .textContent = "Chamados em Andamento";
+
+                document
+                    .getElementById("subtituloPagina")
+                    .textContent =
+                    "Acompanhe os chamados que estão sendo atendidos.";
+
+                document
+                    .getElementById("tituloPainel")
+                    .textContent = "Em andamento";
+
+                marcarMenuAtivo("menuAndamento");
+
+
+                filtroStatus.value =
+                    "EM_ANDAMENTO";
+
+
+                aplicarFiltros();
+
+
+                document
+                    .getElementById(
+                        "painelChamados"
+                    )
+                    .scrollIntoView({
+                        behavior: "smooth"
+                    });
+            }
+        );
+
+
+    document
+        .getElementById("menuFinalizados")
+        .addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+
+
+                document
+                    .getElementById("cardsDashboard")
+                    .style.display = "none";
+
+                document
+                    .getElementById("tituloPagina")
+                    .textContent = "Chamados Finalizados";
+
+                document
+                    .getElementById("subtituloPagina")
+                    .textContent =
+                    "Consulte os chamados que já foram concluídos.";
+
+                document
+                    .getElementById("tituloPainel")
+                    .textContent = "Finalizados";
+
+                marcarMenuAtivo("menuFinalizados");
+
+
+                filtroStatus.value =
+                    "FECHADO";
+
+
+                aplicarFiltros();
+
+
+                document
+                    .getElementById(
+                        "painelChamados"
+                    )
+                    .scrollIntoView({
+                        behavior: "smooth"
+                    });
+            }
+        );
+
+
+    /* MENSAGEM */
+
+    function mostrarMensagem(texto, tipo) {
+
+        const mensagem =
+            document.getElementById(
+                "mensagem"
+            );
+
+
+        mensagem.textContent =
+            texto;
+
+
+        mensagem.className =
+            "mensagem " + tipo;
+
+
+        setTimeout(
+            function () {
+
+                mensagem.className =
+                    "mensagem";
+
+            },
+            3000
+        );
+    }
+
+
+    /* SEGURANÇA */
+
+    function escaparHTML(valor) {
+
+        if (
+            valor === null ||
+            valor === undefined
+        ) {
+
+            return "";
+        }
+
+
+        return String(valor)
+
+            .replaceAll("&", "&amp;")
+
+            .replaceAll("<", "&lt;")
+
+            .replaceAll(">", "&gt;")
+
+            .replaceAll('"', "&quot;")
+
+            .replaceAll("'", "&#039;");
+    }
+
+
+    /* INICIAR */
+
+    (async function iniciarSistema() {
+        const autenticado = await carregarUsuario();
+        if (autenticado) await carregarChamados();
+    })();
+
+</script>
+
+</body>
+
+</html>
