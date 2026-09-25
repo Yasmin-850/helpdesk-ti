@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.helpdesk.helpdesk_ti.controller.ChamadoController;
+import br.com.helpdesk.helpdesk_ti.dto.UsuarioResumo;
 import br.com.helpdesk.helpdesk_ti.dto.UsuarioSessao;
 import br.com.helpdesk.helpdesk_ti.model.Chamado;
 import br.com.helpdesk.helpdesk_ti.service.ChamadoService;
@@ -39,13 +40,14 @@ class ChamadoControllerTest {
         chamadoController =
                 new ChamadoController(chamadoService, usuarioService);
 
-        UsuarioSessao admin =
-                new UsuarioSessao(
-                        "Administrador",
-                        "admin@helpdesk.com",
-                        "TI",
-                        "ADMIN"
-                );
+        // Simula um administrador logado no sistema
+        UsuarioSessao admin = new UsuarioSessao(
+                1L,
+                "Administrador",
+                "admin@helpdesk.com",
+                "ADMIN",
+                "TI"
+        );
 
         when(session.getAttribute("usuario"))
                 .thenReturn(admin);
@@ -111,12 +113,13 @@ class ChamadoControllerTest {
         chamado.setStatus("ABERTO");
         chamado.setCriadorEmail("yasmin@helpdesk.com");
 
-        br.com.helpdesk.helpdesk_ti.dto.UsuarioResumo usuario =
-                new br.com.helpdesk.helpdesk_ti.dto.UsuarioResumo(
-                        "Yasmin",
-                        "yasmin@helpdesk.com",
-                        "TI"
-                );
+        UsuarioResumo usuario = new UsuarioResumo(
+                2L,
+                "Yasmin",
+                "yasmin@helpdesk.com",
+                "USUARIO",
+                "TI"
+        );
 
         when(usuarioService.buscarPorEmail(
                 "yasmin@helpdesk.com"))
@@ -138,7 +141,16 @@ class ChamadoControllerTest {
                 resultado.getCriadorEmail()
         );
 
-        verify(chamadoService).salvar(chamado);
+        assertEquals(
+                "Yasmin",
+                resultado.getSolicitante()
+        );
+
+        verify(usuarioService)
+                .buscarPorEmail("yasmin@helpdesk.com");
+
+        verify(chamadoService)
+                .salvar(chamado);
     }
 
     // TESTE 4 - BUSCAR POR STATUS
@@ -238,7 +250,6 @@ class ChamadoControllerTest {
     void deveAlterarStatusDoChamado() {
 
         Chamado chamado = new Chamado();
-
         chamado.setId(1L);
         chamado.setStatus("ABERTO");
 
@@ -260,7 +271,11 @@ class ChamadoControllerTest {
                 resultado.getStatus()
         );
 
-        verify(chamadoService).salvar(chamado);
+        verify(chamadoService)
+                .buscarPorId(1L);
+
+        verify(chamadoService)
+                .salvar(chamado);
     }
 
     // TESTE 9 - EXCLUIR CHAMADO
@@ -272,6 +287,7 @@ class ChamadoControllerTest {
                 session
         );
 
-        verify(chamadoService).excluir(1L);
+        verify(chamadoService)
+                .excluir(1L);
     }
 }
