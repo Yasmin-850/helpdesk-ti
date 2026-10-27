@@ -80,6 +80,7 @@ public class UsuarioService {
 
         validarPerfil(perfilNormalizado);
         validarEmailDisponivel(email, id);
+        validarNomeDisponivel(nome, id); // <-- Validação de nome duplicado na edição
         validarAlteracaoAdministrador(usuario, perfilNormalizado, usuarioLogadoId);
 
         usuario.setNome(nome.trim());
@@ -104,6 +105,7 @@ public class UsuarioService {
 
         validarPerfil(perfilNormalizado);
         validarEmailDisponivel(email, null);
+        validarNomeDisponivel(nome, null); // <-- Validação de nome duplicado na criação
 
         Usuario usuario = new Usuario(
                 nome.trim(),
@@ -165,6 +167,7 @@ public class UsuarioService {
 
         validarNomeEEmail(nome, email);
         validarEmailDisponivel(email, id);
+        validarNomeDisponivel(nome, id); // <-- Validação de nome duplicado
 
         usuario.setNome(nome.trim());
         usuario.setEmail(normalizarEmail(email));
@@ -271,6 +274,22 @@ public class UsuarioService {
                         );
                     }
                 });
+    }
+
+    // --- NOVA VALIDAÇÃO ADICIONADA ---
+    private void validarNomeDisponivel(String nome, Long usuarioId) {
+        String nomeNormalizado = nome.trim();
+        repository.findAll().forEach(usuarioExistente -> {
+            boolean mesmoNome = usuarioExistente.getNome().trim().equalsIgnoreCase(nomeNormalizado);
+            boolean mesmoUsuario = usuarioId != null && usuarioExistente.getId().equals(usuarioId);
+
+            if (mesmoNome && !mesmoUsuario) {
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "Já existe um usuário com este nome"
+                );
+            }
+        });
     }
 
     private void validarAlteracaoAdministrador(
