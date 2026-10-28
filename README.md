@@ -4,6 +4,10 @@ Sistema acadêmico de gerenciamento de chamados de TI desenvolvido com Java 21, 
 
 O projeto foi desenvolvido para o Trabalho A3 da disciplina de Gestão e Qualidade de Software, aplicando práticas de qualidade, testes automatizados, versionamento e integração contínua.
 
+## 🌐 Aplicação em Produção
+
+Acesse o sistema online: [http://helpdesk-ti-production.up.railway.app/](http://helpdesk-ti-production.up.railway.app/)
+
 ## Funcionalidades
 
 - Login com sessão e senhas BCrypt
@@ -84,7 +88,7 @@ A utilização de um sistema centralizado de chamados auxilia na identificação
 
 Dessa forma, o projeto demonstra como soluções de software podem apoiar processos de inovação e contribuir para uma infraestrutura tecnológica mais organizada e eficiente.
 
-## Acessos de demonstração (ambiente local)
+## Acessos de demonstração
 
 ### Administrador
 
@@ -108,7 +112,7 @@ Senha:
 
 Em hospedagem pública, defina as variáveis `HELPDESK_ADMIN_PASSWORD` e `HELPDESK_USER_PASSWORD` com senhas próprias.
 
-## Como executar
+## Como executar (ambiente local)
 
 No Windows, abra o terminal na pasta do projeto e execute:
 
