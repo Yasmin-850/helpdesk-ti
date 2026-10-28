@@ -4,7 +4,7 @@ Sistema acadêmico de gerenciamento de chamados de TI desenvolvido com Java 21, 
 
 O projeto foi desenvolvido para o Trabalho A3 da disciplina de Gestão e Qualidade de Software, aplicando práticas de qualidade, testes automatizados, versionamento e integração contínua.
 
-## 🌐 Aplicação em Produção
+## Aplicação em Produção
 
 Acesse o sistema online: [http://helpdesk-ti-production.up.railway.app/](http://helpdesk-ti-production.up.railway.app/)
 
